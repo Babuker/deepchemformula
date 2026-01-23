@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered chemical formula optimizer for pharmaceutical formulation design. Optimize costs, performance, and compliance.">
+    <meta name="keywords" content="chemical formula, pharmaceutical, optimization, AI, formulation, drug design">
+    <meta name="author" content="Chemical Formula Optimizer">
+    <meta property="og:title" content="Chemical Formula Optimizer">
+    <meta property="og:description" content="AI-Powered Pharmaceutical Formulation Design">
+    <meta property="og:type" content="website">
+    <title>Chemical Formula Optimizer | AI-Powered Formulation Design</title>
+    
+    <!-- Preconnect for external resources -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/images/favicon.ico">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+    
+    <!-- Inline Critical CSS -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Skip link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px;
+            z-index: 100;
+            text-decoration: none;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Header -->
+    <header class="app-header" role="banner">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon" aria-hidden="true">🧪</div>
+                    <div class="logo-text">
+                        <h1>Chemical Formula Optimizer</h1>
+                        <p>AI-Powered Pharmaceutical Formulation Design</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-light" onclick="window.location.href='ar.html'">
+                        <i class="fas fa-language" aria-hidden="true"></i> العربية
+                    </button>
+                    <button class="btn btn-info" onclick="showHelp()">
+                        <i class="fas fa-question-circle" aria-hidden="true"></i> Help
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="main-content" role="main">
+        <div class="container">
+            <!-- Formula Configuration -->
+            <section class="formula-section">
+                <h2><i class="fas fa-sliders-h" aria-hidden="true"></i> Formula Configuration</h2>
+                
+                <div class="form-container">
+                    <form id="formulaForm" novalidate>
+                        <!-- Active Ingredients -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-flask" aria-hidden="true"></i> Active Pharmaceutical Ingredients</h3>
+                            <div id="apiContainer">
+                                <div class="api-row">
+                                    <select class="api-select" required aria-label="Select active pharmaceutical ingredient">
+                                        <option value="">Select API...</option>
+                                        <option value="paracetamol">Paracetamol (Acetaminophen)</option>
+                                        <option value="ibuprofen">Ibuprofen</option>
+                                        <option value="amoxicillin">Amoxicillin Trihydrate</option>
+                                        <option value="metformin">Metformin HCl</option>
+                                        <option value="omeprazole">Omeprazole</option>
+                                    </select>
+                                    <div class="input-with-unit">
+                                        <input type="number" class="api-strength" min="1" max="2000" value="500" 
+                                               required pattern="[0-9]+" title="Please enter a valid number between 1 and 2000">
+                                        <span class="unit">mg</span>
+                                    </div>
+                                    <button type="button" class="btn-icon btn-danger" onclick="removeAPIRow(this)" aria-label="Remove ingredient">
+                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="addAPIRow()">
+                                <i class="fas fa-plus" aria-hidden="true"></i> Add Another API
+                            </button>
+                        </div>
+                        
+                        <!-- Optimization Goals -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-bullseye" aria-hidden="true"></i> Optimization Goals</h3>
+                            <div class="form-group">
+                                <label for="primaryGoal">Primary Objective</label>
+                                <select id="primaryGoal" required>
+                                    <option value="cost">Minimize Cost</option>
+                                    <option value="performance" selected>Maximize Performance</option>
+                                    <option value="balanced">Balanced Approach</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="budget">
+                                    Target Budget: <span id="budgetValue">$200</span>
+                                </label>
+                                <input type="range" id="budget" min="50" max="500" value="200" step="10" 
+                                       aria-label="Target budget slider">
+                                <div class="range-labels">
+                                    <span>$50</span>
+                                    <span>$275</span>
+                                    <span>$500</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Form -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-pills" aria-hidden="true"></i> Product Form</h3>
+                            <div class="product-options" role="radiogroup" aria-label="Select product form">
+                                <div class="product-option active" data-form="tablet" role="radio" aria-checked="true" tabindex="0">
+                                    <i class="fas fa-tablet-alt" aria-hidden="true"></i>
+                                    <span>Tablet</span>
+                                </div>
+                                <div class="product-option" data-form="capsule" role="radio" aria-checked="false" tabindex="0">
+                                    <i class="fas fa-capsules" aria-hidden="true"></i>
+                                    <span>Capsule</span>
+                                </div>
+                                <div class="product-option" data-form="syrup" role="radio" aria-checked="false" tabindex="0">
+                                    <i class="fas fa-wine-bottle" aria-hidden="true"></i>
+                                    <span>Syrup</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="productForm" value="tablet">
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg" id="optimizeBtn">
+                                <i class="fas fa-cogs" aria-hidden="true"></i> Optimize Formula with AI
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+            
+            <!-- Results Section -->
+            <section class="results-section">
+                <h2><i class="fas fa-chart-line" aria-hidden="true"></i> Optimization Results</h2>
+                
+                <div class="results-container">
+                    <!-- Placeholder -->
+                    <div id="resultsPlaceholder" class="results-placeholder">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </div>
+                        <h3>Optimization Results</h3>
+                        <p>Configure your formula and click "Optimize Formula with AI" to see intelligent results.</p>
+                    </div>
+                    
+                    <!-- Loading Indicator -->
+                    <div id="loadingIndicator" class="loading" style="display: none;" aria-live="polite" aria-busy="true">
+                        <div class="spinner" aria-hidden="true"></div>
+                        <p>AI is analyzing your formulation...</p>
+                        <p class="loading-sub">Evaluating 1000+ possible combinations</p>
+                    </div>
+                    
+                    <!-- Results Content -->
+                    <div id="resultsContent" class="results-content" style="display: none;" role="region" aria-label="Optimization results">
+                        <!-- Results will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Features Section -->
+            <section class="features-section">
+                <h2><i class="fas fa-star" aria-hidden="true"></i> Key Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain" aria-hidden="true"></i>
+                        </div>
+                        <h3>AI-Powered Optimization</h3>
+                        <p>Advanced genetic algorithms find the optimal balance between cost, performance, and stability.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                        </div>
+                        <h3>Regulatory Compliance</h3>
+                        <p>Automatic validation against BP, USP, and EP pharmacopeia standards.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-pie" aria-hidden="true"></i>
+                        </div>
+                        <h3>Cost Analysis</h3>
+                        <p>Detailed cost breakdown and savings analysis for each formulation.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="app-footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-icon" aria-hidden="true">🧪</div>
+                    <h3>Chemical Formula Optimizer</h3>
+                </div>
+                <p>An open-source AI tool for pharmaceutical formulation optimization.</p>
+                <div class="footer-links">
+                    <a href="https://github.com/babuker/chemical-formula-optimizer" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-github" aria-hidden="true"></i> GitHub
+                    </a>
+                    <a href="ar.html">
+                        <i class="fas fa-language" aria-hidden="true"></i> العربية
+                    </a>
+                    <a href="documentation.html">
+                        <i class="fas fa-book" aria-hidden="true"></i> Documentation
+                    </a>
+                </div>
+                <p class="copyright">© 2024 Chemical Formula Optimizer | MIT License</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Noscript fallback -->
+    <noscript>
+        <div class="noscript-warning">
+            <p>JavaScript is required for this application to function properly. Please enable JavaScript to continue.</p>
+        </div>
+    </noscript>
+    
+    <!-- JavaScript Files -->
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/optimizer.js"></script>
+    <script src="assets/js/database.js"></script>
+    <script src="assets/js/charts.js" defer></script>
+    
+    <!-- Initialize Service Worker for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registered successfully with scope: ', registration.scope);
+                    }, function(error) {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+        
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof initApplication === 'function') {
+                initApplication();
+            }
+        });
+    </script>
+</body>
+</html>
