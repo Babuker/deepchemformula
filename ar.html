@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="أداة التحسين الآلي للصيغ الكيميائية باستخدام الذكاء الاصطناعي لتصميم المستحضرات الصيدلانية">
+    <title>محسن الصيغ الكيميائية | تصميم المستحضرات المدعوم بالذكاء الاصطناعي</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/images/favicon.ico">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            text-align: right;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.5rem;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+        }
+        
+        .api-row {
+            flex-direction: row-reverse;
+        }
+        
+        .input-with-unit {
+            flex-direction: row-reverse;
+        }
+        
+        .unit {
+            right: auto;
+            left: 15px;
+        }
+        
+        .range-labels {
+            flex-direction: row-reverse;
+        }
+        
+        .product-options {
+            flex-direction: row-reverse;
+        }
+        
+        .features-grid {
+            direction: rtl;
+        }
+        
+        .footer-links {
+            flex-direction: row-reverse;
+        }
+        
+        .result-actions {
+            flex-direction: row-reverse;
+        }
+        
+        .form-group label {
+            text-align: right;
+        }
+        
+        .form-section h3 {
+            justify-content: flex-end;
+        }
+        
+        h2 {
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">🧪</div>
+                    <div class="logo-text">
+                        <h1>محسن الصيغ الكيميائية</h1>
+                        <p>تصميم المستحضرات الصيدلانية المدعوم بالذكاء الاصطناعي</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-light" onclick="window.location.href='index.html'">
+                        <i class="fas fa-language"></i> English
+                    </button>
+                    <button class="btn btn-info" onclick="showHelp()">
+                        <i class="fas fa-question-circle"></i> المساعدة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Formula Configuration -->
+            <section class="formula-section">
+                <h2><i class="fas fa-sliders-h"></i> إعدادات الصيغة</h2>
+                
+                <div class="form-container">
+                    <form id="formulaForm">
+                        <!-- Active Ingredients -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-flask"></i> المكونات الدوائية الفعالة</h3>
+                            <div id="apiContainer">
+                                <div class="api-row">
+                                    <select class="api-select" required>
+                                        <option value="">اختر المكون الفعال...</option>
+                                        <option value="paracetamol">باراسيتامول (أسيتامينوفين)</option>
+                                        <option value="ibuprofen">آيبوبروفين</option>
+                                        <option value="amoxicillin">أموكسيسيلين ثلاثي الهيدرات</option>
+                                        <option value="metformin">ميتفورمين هيدروكلوريد</option>
+                                        <option value="omeprazole">أوميبرازول</option>
+                                    </select>
+                                    <div class="input-with-unit">
+                                        <input type="number" class="api-strength" min="1" max="2000" value="500" required>
+                                        <span class="unit">ملغ</span>
+                                    </div>
+                                    <button type="button" class="btn-icon btn-danger" onclick="removeAPIRow(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="addAPIRow()">
+                                <i class="fas fa-plus"></i> إضافة مكون فعال آخر
+                            </button>
+                        </div>
+                        
+                        <!-- Optimization Goals -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-bullseye"></i> أهداف التحسين</h3>
+                            <div class="form-group">
+                                <label for="primaryGoal">الهدف الرئيسي</label>
+                                <select id="primaryGoal" required>
+                                    <option value="cost">تقليل التكلفة</option>
+                                    <option value="performance" selected>تعزيز الأداء</option>
+                                    <option value="balanced">نهج متوازن</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="budget">
+                                    الميزانية المستهدفة: <span id="budgetValue">200$</span>
+                                </label>
+                                <input type="range" id="budget" min="50" max="500" value="200" step="10">
+                                <div class="range-labels">
+                                    <span>500$</span>
+                                    <span>275$</span>
+                                    <span>50$</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Form -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-pills"></i> شكل المنتج</h3>
+                            <div class="product-options">
+                                <div class="product-option active" data-form="tablet">
+                                    <i class="fas fa-tablet-alt"></i>
+                                    <span>أقراص</span>
+                                </div>
+                                <div class="product-option" data-form="capsule">
+                                    <i class="fas fa-capsules"></i>
+                                    <span>كبسولات</span>
+                                </div>
+                                <div class="product-option" data-form="syrup">
+                                    <i class="fas fa-wine-bottle"></i>
+                                    <span>شراب</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="productForm" value="tablet">
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg" id="optimizeBtn">
+                                <i class="fas fa-cogs"></i> تحسين الصيغة بالذكاء الاصطناعي
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+            
+            <!-- Results Section -->
+            <section class="results-section">
+                <h2><i class="fas fa-chart-line"></i> نتائج التحسين</h2>
+                
+                <div class="results-container">
+                    <!-- Placeholder -->
+                    <div id="resultsPlaceholder" class="results-placeholder">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>نتائج التحسين</h3>
+                        <p>قم بتكوين الصيغة الخاصة بك وانقر على "تحسين الصيغة بالذكاء الاصطناعي" لرؤية النتائج الذكية.</p>
+                    </div>
+                    
+                    <!-- Loading Indicator -->
+                    <div id="loadingIndicator" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>جاري تحليل الصيغة بالذكاء الاصطناعي...</p>
+                        <p class="loading-sub">جاري تقييم أكثر من 1000 تركيبة محتملة</p>
+                    </div>
+                    
+                    <!-- Results Content -->
+                    <div id="resultsContent" class="results-content" style="display: none;">
+                        <!-- Results will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Features Section -->
+            <section class="features-section">
+                <h2><i class="fas fa-star"></i> المميزات الرئيسية</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>تحسين مدعوم بالذكاء الاصطناعي</h3>
+                        <p>خوارزميات جينية متقدمة تجد التوازن الأمثل بين التكلفة والأداء والثبات.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>الامتثال التنظيمي</h3>
+                        <p>تحقق تلقائي من معايير دستور الأدوية البريطاني والأمريكي والأوروبي.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h3>تحليل التكلفة</h3>
+                        <p>تحليل مفصل للتكلفة وتوفير التحليل لكل صيغة.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-icon">🧪</div>
+                    <h3>محسن الصيغ الكيميائية</h3>
+                </div>
+                <p>أداة مفتوحة المصدر تعمل بالذكاء الاصطناعي لتحسين الصيغ الصيدلانية.</p>
+                <div class="footer-links">
+                    <a href="https://github.com/babuker/chemical-formula-optimizer" target="_blank">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    <a href="index.html">
+                        <i class="fas fa-language"></i> English
+                    </a>
+                    <a href="#documentation">
+                        <i class="fas fa-book"></i> التوثيق
+                    </a>
+                </div>
+                <p class="copyright">© 2024 محسن الصيغ الكيميائية | رخصة MIT</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript Files -->
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/optimizer.js"></script>
+    <script src="assets/js/database.js"></script>
+    <script src="assets/js/charts.js"></script>
+    
+    <!-- Arabic-specific scripts -->
+    <script>
+        // Override English strings with Arabic
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update loading messages
+            const loadingMessages = {
+                en: 'AI is analyzing your formulation...',
+                ar: 'جاري تحليل الصيغة بالذكاء الاصطناعي...'
+            };
+            
+            // Update button texts if needed
+            const optimizeBtn = document.getElementById('optimizeBtn');
+            if (optimizeBtn) {
+                optimizeBtn.innerHTML = '<i class="fas fa-cogs"></i> تحسين الصيغة بالذكاء الاصطناعي';
+            }
+            
+            // Update help content
+            window.showHelp = function() {
+                const helpContent = `
+                    <h2>كيفية استخدام محسن الصيغ الكيميائية</h2>
+                    
+                    <h3>١. تكوين المكونات الفعالة</h3>
+                    <p>أضف مكونًا دوائيًا فعالًا أو أكثر مع قوتها.</p>
+                    
+                    <h3>٢. تعيين أهداف التحسين</h3>
+                    <p>اختر هدفك الرئيسي وحدد الميزانية المستهدفة.</p>
+                    
+                    <h3>٣. اختيار شكل المنتج</h3>
+                    <p>اختر بين أقراص، كبسولات، أو شراب.</p>
+                    
+                    <h3>٤. التحسين</h3>
+                    <p>انقر على "تحسين الصيغة بالذكاء الاصطناعي" لإنشاء الصيغ المثلى.</p>
+                    
+                    <h3>فهم النتائج</h3>
+                    <ul>
+                        <li><strong>كفاءة التكلفة:</strong> مدى فعالية التكلفة للصيغة</li>
+                        <li><strong>الأداء:</strong> الفعالية العلاجية المتوقعة</li>
+                        <li><strong>الثبات:</strong> العمر الافتراضي وثبات التخزين</li>
+                        <li><strong>الامتثال:</strong> الالتزام بالمعايير التنظيمية</li>
+                    </ul>
+                `;
+                
+                showModal('دليل المساعدة', helpContent);
+            };
+        });
+    </script>
+</body>
+</html>
