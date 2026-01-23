@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemical Formula Optimizer | AI-Powered Formulation Design</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/images/favicon.ico">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js for Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- HTML2PDF for Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        /* Additional inline styles for immediate functionality */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* API Table Styles */
+        .api-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .api-table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .api-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .api-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .api-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .api-name {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .api-quantity {
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        .api-unit {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 4px;
+        }
+        
+        .api-actions {
+            display: flex;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">🧪</div>
+                    <div class="logo-text">
+                        <h1>Chemical Formula Optimizer</h1>
+                        <p>AI-Powered Pharmaceutical Formulation Design</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-light" onclick="window.location.href='ar.html'">
+                        <i class="fas fa-language"></i> العربية
+                    </button>
+                    <button class="btn btn-info" onclick="showHelp()">
+                        <i class="fas fa-question-circle"></i> Help
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Formula Configuration -->
+            <section class="formula-section">
+                <h2><i class="fas fa-sliders-h"></i> Formula Configuration</h2>
+                
+                <div class="form-container">
+                    <form id="formulaForm">
+                        <!-- Active Ingredients -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-flask"></i> Active Pharmaceutical Ingredients</h3>
+                            
+                            <!-- API Table -->
+                            <div class="table-responsive">
+                                <table class="api-table" id="apiTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="40%">API Name</th>
+                                            <th width="30%">Quantity</th>
+                                            <th width="20%">Unit</th>
+                                            <th width="10%">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="apiTableBody">
+                                        <tr id="apiRow-1">
+                                            <td>
+                                                <select class="api-select" name="api[]" required>
+                                                    <option value="">Select API...</option>
+                                                    <option value="paracetamol">Paracetamol (Acetaminophen)</option>
+                                                    <option value="ibuprofen">Ibuprofen</option>
+                                                    <option value="amoxicillin">Amoxicillin Trihydrate</option>
+                                                    <option value="metformin">Metformin HCl</option>
+                                                    <option value="omeprazole">Omeprazole</option>
+                                                    <option value="aspirin">Aspirin</option>
+                                                    <option value="caffeine">Caffeine</option>
+                                                    <option value="vitamin-c">Vitamin C (Ascorbic Acid)</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" 
+                                                       class="api-quantity-input" 
+                                                       name="quantity[]" 
+                                                       min="1" 
+                                                       max="5000" 
+                                                       value="500" 
+                                                       step="1" 
+                                                       required>
+                                            </td>
+                                            <td>
+                                                <select class="api-unit-select" name="unit[]" required>
+                                                    <option value="mg" selected>mg</option>
+                                                    <option value="g">g</option>
+                                                    <option value="ml">ml</option>
+                                                    <option value="µg">µg</option>
+                                                    <option value="IU">IU</option>
+                                                </select>
+                                            </td>
+                                            <td class="api-actions">
+                                                <button type="button" 
+                                                        class="btn-icon btn-danger btn-sm" 
+                                                        onclick="removeAPIRow(1)" 
+                                                        title="Remove API">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <button type="button" class="btn btn-secondary" onclick="addAPIRow()">
+                                <i class="fas fa-plus"></i> Add Another API
+                            </button>
+                            
+                            <div class="api-summary" id="apiSummary" style="margin-top: 20px; display: none;">
+                                <h4><i class="fas fa-list-check"></i> Selected APIs Summary</h4>
+                                <div id="summaryContent"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Optimization Goals -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-bullseye"></i> Optimization Goals</h3>
+                            <div class="form-group">
+                                <label for="primaryGoal">Primary Objective</label>
+                                <select id="primaryGoal" required>
+                                    <option value="cost">Minimize Cost</option>
+                                    <option value="performance" selected>Maximize Performance</option>
+                                    <option value="balanced">Balanced Approach</option>
+                                    <option value="stability">Maximize Stability</option>
+                                    <option value="bioavailability">Maximize Bioavailability</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="budget">
+                                    Target Budget: <span id="budgetValue">$200</span>
+                                </label>
+                                <input type="range" id="budget" min="50" max="500" value="200" step="10">
+                                <div class="range-labels">
+                                    <span>$50</span>
+                                    <span>$275</span>
+                                    <span>$500</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="productionScale">Production Scale</label>
+                                <select id="productionScale" required>
+                                    <option value="lab">Lab Scale (1-10 kg)</option>
+                                    <option value="pilot">Pilot Scale (10-100 kg)</option>
+                                    <option value="commercial" selected>Commercial Scale (100+ kg)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Form -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-pills"></i> Product Form</h3>
+                            <div class="product-options">
+                                <div class="product-option active" data-form="tablet">
+                                    <i class="fas fa-tablet-alt"></i>
+                                    <span>Tablet</span>
+                                </div>
+                                <div class="product-option" data-form="capsule">
+                                    <i class="fas fa-capsules"></i>
+                                    <span>Capsule</span>
+                                </div>
+                                <div class="product-option" data-form="syrup">
+                                    <i class="fas fa-wine-bottle"></i>
+                                    <span>Syrup</span>
+                                </div>
+                                <div class="product-option" data-form="ointment">
+                                    <i class="fas fa-tube"></i>
+                                    <span>Ointment</span>
+                                </div>
+                                <div class="product-option" data-form="injection">
+                                    <i class="fas fa-syringe"></i>
+                                    <span>Injection</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="productForm" value="tablet">
+                        </div>
+                        
+                        <!-- Additional Parameters -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-cogs"></i> Additional Parameters</h3>
+                            <div class="form-group">
+                                <label for="releaseProfile">Release Profile</label>
+                                <select id="releaseProfile">
+                                    <option value="immediate">Immediate Release</option>
+                                    <option value="sustained">Sustained Release</option>
+                                    <option value="delayed">Delayed Release</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="storageConditions">Storage Conditions</label>
+                                <select id="storageConditions">
+                                    <option value="room">Room Temperature (15-30°C)</option>
+                                    <option value="refrigerated">Refrigerated (2-8°C)</option>
+                                    <option value="frozen">Frozen (≤ -20°C)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg" id="optimizeBtn">
+                                <i class="fas fa-cogs"></i> Optimize Formula with AI
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                                <i class="fas fa-redo"></i> Reset Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+            
+            <!-- Results Section -->
+            <section class="results-section">
+                <h2><i class="fas fa-chart-line"></i> Optimization Results</h2>
+                
+                <div class="results-container">
+                    <!-- Placeholder -->
+                    <div id="resultsPlaceholder" class="results-placeholder">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>Optimization Results</h3>
+                        <p>Configure your formula and click "Optimize Formula with AI" to see intelligent results.</p>
+                    </div>
+                    
+                    <!-- Loading Indicator -->
+                    <div id="loadingIndicator" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>AI is analyzing your formulation...</p>
+                        <p class="loading-sub">Evaluating 1000+ possible combinations</p>
+                        <div class="progress" style="width: 60%; margin: 20px auto;">
+                            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Content -->
+                    <div id="resultsContent" class="results-content" style="display: none;">
+                        <!-- Results will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- API Database Section -->
+            <section class="database-section">
+                <h2><i class="fas fa-database"></i> API Database</h2>
+                <div class="database-container">
+                    <div class="database-search">
+                        <input type="text" id="apiSearch" placeholder="Search APIs by name or property...">
+                        <button class="btn btn-secondary" onclick="searchAPIs()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    <div class="database-table-container">
+                        <table class="database-table" id="apiDatabaseTable">
+                            <thead>
+                                <tr>
+                                    <th>API Name</th>
+                                    <th>Chemical Formula</th>
+                                    <th>Molecular Weight</th>
+                                    <th>Solubility</th>
+                                    <th>Price/kg</th>
+                                    <th>Add</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- API data will be loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Features Section -->
+            <section class="features-section">
+                <h2><i class="fas fa-star"></i> Key Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>AI-Powered Optimization</h3>
+                        <p>Advanced genetic algorithms find the optimal balance between cost, performance, and stability.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Regulatory Compliance</h3>
+                        <p>Automatic validation against BP, USP, and EP pharmacopeia standards.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h3>Cost Analysis</h3>
+                        <p>Detailed cost breakdown and savings analysis for each formulation.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-table"></i>
+                        </div>
+                        <h3>API Management</h3>
+                        <p>Comprehensive API database with quantity tracking and management.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-icon">🧪</div>
+                    <h3>Chemical Formula Optimizer</h3>
+                </div>
+                <p>An open-source AI tool for pharmaceutical formulation optimization.</p>
+                <div class="footer-links">
+                    <a href="https://github.com/babuker/chemical-formula-optimizer" target="_blank">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    <a href="ar.html">
+                        <i class="fas fa-language"></i> العربية
+                    </a>
+                    <a href="#documentation">
+                        <i class="fas fa-book"></i> Documentation
+                    </a>
+                    <a href="#contact">
+                        <i class="fas fa-envelope"></i> Contact
+                    </a>
+                </div>
+                <p class="copyright">© 2024 Chemical Formula Optimizer | MIT License</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript Files -->
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/optimizer.js"></script>
+    <script src="assets/js/database.js"></script>
+    <script src="assets/js/charts.js"></script>
+    <script src="assets/js/api-manager.js"></script>
+    
+    <!-- Initialize Service Worker for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered successfully');
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+        
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initApplication();
+        });
+    </script>
+</body>
+</html>
